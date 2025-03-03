@@ -12,6 +12,7 @@ class _LoginPageState extends State<LoginPage> {
     @override
     Widget build(BuildContext context){
         return Scaffold(
+            resizeToAvoidBottomInset: false,
             backgroundColor: Colors.grey[300],
             body: SafeArea(
                 child: Center(
@@ -71,7 +72,7 @@ class _LoginPageState extends State<LoginPage> {
                             border: InputBorder.none,
                             hintText: 'Password',
                             ),
-                        ), // textfield
+                        ), // Textfield
                         ), // Padding
                         ), // Container
                     ), //Padding
