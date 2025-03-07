@@ -6,6 +6,7 @@ import 'water_intake.dart';
 import 'bmi_calculator.dart';
 import 'blood_glucose_level.dart';
 import 'medication.dart';
+import 'foot_steps.dart';
 
 // Main Dashboard Widget
 class Dashboard extends StatelessWidget {
@@ -279,7 +280,7 @@ class Dashboard extends StatelessWidget {
           _buildDrawerItem(context, Icons.directions_walk, "Exercise", ExerciseView()),
           _buildDrawerItem(context, Icons.water_drop, "Water Intake", WaterIntakeView()),
           _buildDrawerItem(context, Icons.calculate, "BMI Calculator", BMICalculator()),
-          _buildDrawerItem(context, Icons.healing, "Foot Care", Placeholder()),
+          _buildDrawerItem(context, Icons.healing, "Foot Care", FootstepsTracker()),
           _buildDrawerItem(context, Icons.school, "Education", Placeholder()),
           _buildDrawerItem(context, Icons.insert_chart, "Insights", Placeholder()),
           Divider(),
