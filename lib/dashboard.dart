@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:patient_care/setting.dart';
 import 'diet.dart';
 import 'exercise.dart';
 import 'water_intake.dart';
@@ -361,7 +362,7 @@ class Dashboard extends StatelessWidget {
           _buildDrawerItem(context, Icons.school, "Appointment", DoctorAppointmentPage()),
           _buildDrawerItem(context, Icons.insert_chart, "Insights", Placeholder()),
           Divider(),
-          _buildDrawerItem(context, Icons.settings, "Settings", Placeholder()),
+          _buildDrawerItem(context, Icons.settings, "Settings", SettingsPage()),
           _buildDrawerItem(context, Icons.info, "Disclaimer", Placeholder()),
           _buildDrawerItem(context, Icons.help, "Help", Placeholder()),
         ],
