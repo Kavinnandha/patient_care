@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'providers/dashboard_provider.dart';
 import 'package:patient_care/setting.dart';
 import 'diet.dart';
 import 'exercise.dart';
@@ -8,7 +11,6 @@ import 'bmi_calculator.dart';
 import 'blood_glucose_level.dart';
 import 'medication.dart';
 import 'appointment.dart';
-import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class Dashboard extends StatefulWidget {
   const Dashboard({Key? key}) : super(key: key);
@@ -19,6 +21,15 @@ class Dashboard extends StatefulWidget {
 
 class _DashboardState extends State<Dashboard> {
   final RefreshController _refreshController = RefreshController();
+
+  @override
+  void initState() {
+    super.initState();
+    // Fetch dashboard data when the screen loads
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Provider.of<DashboardProvider>(context, listen: false).fetchDashboardSummary();
+    });
+  }
 
   @override
   void dispose() {
