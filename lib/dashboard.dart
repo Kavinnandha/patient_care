@@ -8,9 +8,33 @@ import 'bmi_calculator.dart';
 import 'blood_glucose_level.dart';
 import 'medication.dart';
 import 'appointment.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 
-class Dashboard extends StatelessWidget {
+class Dashboard extends StatefulWidget {
   const Dashboard({Key? key}) : super(key: key);
+
+  @override
+  _DashboardState createState() => _DashboardState();
+}
+
+class _DashboardState extends State<Dashboard> {
+  final RefreshController _refreshController = RefreshController();
+
+  @override
+  void dispose() {
+    _refreshController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _onRefresh() async {
+    try {
+      await Provider.of<DashboardProvider>(context, listen: false)
+          .fetchDashboardSummary();
+      _refreshController.refreshCompleted();
+    } catch (e) {
+      _refreshController.refreshFailed();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -67,65 +91,69 @@ class Dashboard extends StatelessWidget {
         ],
       ),
       drawer: _buildDrawer(context, patientName),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          physics: BouncingScrollPhysics(),
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(left: 8.0, bottom: 16.0),
-                child: Text(
-                  "Hello, ${patientName.split(' ')[0]}!",
-                  style: GoogleFonts.poppins(
-                    fontSize: 28,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.black87,
-                    letterSpacing: 0.5,
+      body: SmartRefresher(
+        controller: _refreshController,
+        onRefresh: _onRefresh,
+        child: SafeArea(
+          child: SingleChildScrollView(
+            physics: BouncingScrollPhysics(),
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(left: 8.0, bottom: 16.0),
+                  child: Text(
+                    "Hello, ${patientName.split(' ')[0]}!",
+                    style: GoogleFonts.poppins(
+                      fontSize: 28,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.black87,
+                      letterSpacing: 0.5,
+                    ),
                   ),
                 ),
-              ),
-              
-              _buildGlucoseLevelCard(glucoseLevel, glucoseUnit, context),
+                
+                _buildGlucoseLevelCard(glucoseLevel, glucoseUnit, context),
 
-              _buildDashboardCard(
-                "Medication Adherence",
-                Icons.medication,
-                "Today: 2/3 taken",
-                "Next: Metformin (500mg) at 2:00 PM",
-                Colors.orange,
-                context,
-                MedicationView(),
-              ),
-              _buildDashboardCard(
-                "Water Intake",
-                Icons.water_drop,
-                "1.2L / 2.5L",
-                "48% of daily goal",
-                Colors.blue,
-                context,
-                WaterIntakeView(),
-              ),
-              _buildDashboardCard(
-                "Today's Activity",
-                Icons.directions_walk,
-                "3,245 steps",
-                "32% of daily goal",
-                Colors.green,
-                context,
-                ExerciseView(),
-              ),
-              _buildDashboardCard(
-                "Diet Plan",
-                Icons.restaurant_menu,
-                "1,450 cal consumed",
-                "2 meals, 1 snack logged today",
-                Colors.purple,
-                context,
-                DietPlanView(),
-              ),
-            ],
+                _buildDashboardCard(
+                  "Medication Adherence",
+                  Icons.medication,
+                  "Today: 2/3 taken",
+                  "Next: Metformin (500mg) at 2:00 PM",
+                  Colors.orange,
+                  context,
+                  MedicationView(),
+                ),
+                _buildDashboardCard(
+                  "Water Intake",
+                  Icons.water_drop,
+                  "1.2L / 2.5L",
+                  "48% of daily goal",
+                  Colors.blue,
+                  context,
+                  WaterIntakeView(),
+                ),
+                _buildDashboardCard(
+                  "Today's Activity",
+                  Icons.directions_walk,
+                  "3,245 steps",
+                  "32% of daily goal",
+                  Colors.green,
+                  context,
+                  ExerciseView(),
+                ),
+                _buildDashboardCard(
+                  "Diet Plan",
+                  Icons.restaurant_menu,
+                  "1,450 cal consumed",
+                  "2 meals, 1 snack logged today",
+                  Colors.purple,
+                  context,
+                  DietPlanView(),
+                ),
+              ],
+            ),
           ),
         ),
       ),
