@@ -69,7 +69,7 @@ class DashboardProvider with ChangeNotifier {
     notifyListeners();
 
     try {
-      final response = await _apiService.get(ApiEndpoints.dashboard);
+      final response = await _apiService.get('dashboard/summary');
       _summary = DashboardSummary.fromJson(response);
     } catch (e) {
       _error = e.toString();

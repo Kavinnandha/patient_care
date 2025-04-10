@@ -394,5 +394,14 @@ class BloodGlucoseProvider with ChangeNotifier {
     }
   }
   
-  // Similar methods for update and delete
+  Future<void> deleteReading(int id) async {
+    try {
+      await _repository.deleteReading(id);
+      _readings.removeWhere((reading) => reading.id == id);
+      notifyListeners();
+    } catch (e) {
+      _error = e.toString();
+      notifyListeners();
+    }
+  }
 }
