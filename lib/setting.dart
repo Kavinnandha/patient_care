@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'providers/auth_provider.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class SettingsPage extends StatefulWidget {
@@ -42,7 +44,13 @@ class _SettingsPageState extends State<SettingsPage> {
           _buildListTile(
             title: "Account Settings",
             icon: Icons.person,
-            onTap: () {},
+            onTap: () {
+              // Implement logout functionality
+              // Assuming you have an AuthProvider to handle authentication
+              final authProvider = Provider.of<AuthProvider>(context, listen: false);
+              authProvider.logout(); // Call the logout method
+              Navigator.of(context).pushReplacementNamed('/login'); // Navigate to login screen
+            },
           ),
           _buildListTile(
             title: "Privacy Policy",

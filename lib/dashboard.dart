@@ -5,6 +5,7 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'providers/dashboard_provider.dart';
 import 'providers/auth_provider.dart';
 import 'package:patient_care/setting.dart';
+import 'profile_page.dart';
 import 'diet.dart';
 import 'exercise.dart';
 import 'water_intake.dart';
@@ -51,13 +52,13 @@ class _DashboardState extends State<Dashboard> {
   @override
   Widget build(BuildContext context) {
     final dashboardProvider = Provider.of<DashboardProvider>(context);
-    final double? glucoseLevel = dashboardProvider.currentGlucoseLevel;
-    final String glucoseUnit = 'mg/dL';
+    final double glucoseLevel = dashboardProvider.currentGlucoseLevel;
+    const String glucoseUnit = 'mg/dL';
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
     final String patientName = authProvider.username ?? "Patient";
 
     return Scaffold(
-      backgroundColor: Color(0xFFF4F7FA),
+      backgroundColor: const Color(0xFFF4F7FA),
       appBar: AppBar(
         title: Text(
           "Dashboard",
@@ -73,30 +74,38 @@ class _DashboardState extends State<Dashboard> {
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 16.0),
-            child: Container(
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: LinearGradient(
-                  colors: [Colors.blue[200]!, Colors.blue[400]!],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.blue.withOpacity(0.3),
-                    spreadRadius: 1,
-                    blurRadius: 6,
-                    offset: Offset(0, 3),
+            child: GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const ProfilePage()),
+                );
+              },
+              child: Container(
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  gradient: LinearGradient(
+                    colors: [Colors.blue[200]!, Colors.blue[400]!],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
                   ),
-                ],
-              ),
-              child: CircleAvatar(
-                backgroundColor: Colors.transparent,
-                child: Text(
-                  patientName.split(' ').map((e) => e[0]).join(''),
-                  style: GoogleFonts.roboto(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.blue.withOpacity(0.3),
+                      spreadRadius: 1,
+                      blurRadius: 6,
+                      offset: const Offset(0, 3),
+                    ),
+                  ],
+                ),
+                child: CircleAvatar(
+                  backgroundColor: Colors.transparent,
+                  child: Text(
+                    patientName.split(' ').map((e) => e[0]).join(''),
+                    style: GoogleFonts.roboto(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
               ),
@@ -110,7 +119,7 @@ class _DashboardState extends State<Dashboard> {
         onRefresh: _onRefresh,
         child: SafeArea(
           child: SingleChildScrollView(
-            physics: BouncingScrollPhysics(),
+            physics: const BouncingScrollPhysics(),
             padding: const EdgeInsets.all(16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -137,16 +146,16 @@ class _DashboardState extends State<Dashboard> {
                   "Tap to view medications",
                   Colors.orange,
                   context,
-                  MedicationView(),
+                  const MedicationView(),
                 ),
                 _buildDashboardCard(
                   "Blood Glucose",
                   Icons.bloodtype,
-                  "${dashboardProvider.averageGlucoseToday?.toStringAsFixed(1) ?? 'No data'} $glucoseUnit avg",
+                  "${dashboardProvider.averageGlucoseToday.toStringAsFixed(1) ?? 'No data'} $glucoseUnit avg",
                   "Today's average",
                   Colors.blue,
                   context,
-                  WaterIntakeView(),
+                  const WaterIntakeView(),
                 ),
                 _buildDashboardCard(
                   "Vital Signs",
@@ -155,7 +164,7 @@ class _DashboardState extends State<Dashboard> {
                   "Latest readings",
                   Colors.green,
                   context,
-                  ExerciseView(),
+                  const ExerciseView(),
                 ),
                 _buildDashboardCard(
                   "Diet Plan",
@@ -164,7 +173,7 @@ class _DashboardState extends State<Dashboard> {
                   "Today's intake",
                   Colors.purple,
                   context,
-                  DietPlanView(),
+                  const DietPlanView(),
                 ),
               ],
             ),
@@ -200,7 +209,7 @@ class _DashboardState extends State<Dashboard> {
       onTap: () {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => BloodGlucoseView()),
+          MaterialPageRoute(builder: (context) => const BloodGlucoseView()),
         );
       },
       child: Container(
@@ -220,7 +229,7 @@ class _DashboardState extends State<Dashboard> {
               color: Colors.grey.withOpacity(0.2),
               spreadRadius: 2,
               blurRadius: 10,
-              offset: Offset(0, 4),
+              offset: const Offset(0, 4),
             ),
           ],
           border: Border.all(
@@ -312,7 +321,7 @@ class _DashboardState extends State<Dashboard> {
           child: Row(
             children: [
               Container(
-                padding: EdgeInsets.all(12),
+                padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     colors: [color.withOpacity(0.1), color.withOpacity(0.2)],
@@ -327,7 +336,7 @@ class _DashboardState extends State<Dashboard> {
                   size: 28,
                 ),
               ),
-              SizedBox(width: 16),
+              const SizedBox(width: 16),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -340,7 +349,7 @@ class _DashboardState extends State<Dashboard> {
                         color: Colors.black87,
                       ),
                     ),
-                    SizedBox(height: 4),
+                    const SizedBox(height: 4),
                     Text(
                       mainStat,
                       style: GoogleFonts.roboto(
@@ -349,7 +358,7 @@ class _DashboardState extends State<Dashboard> {
                         color: Colors.black87,
                       ),
                     ),
-                    SizedBox(height: 2),
+                    const SizedBox(height: 2),
                     Text(
                       subStat,
                       style: GoogleFonts.roboto(
@@ -374,7 +383,7 @@ class _DashboardState extends State<Dashboard> {
         padding: EdgeInsets.zero,
         children: [
           DrawerHeader(
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
               color: Colors.blue,
             ),
             child: Column(
@@ -385,22 +394,22 @@ class _DashboardState extends State<Dashboard> {
                   backgroundColor: Colors.white,
                   child: Text(
                     patientName.split(' ').map((e) => e[0]).join(''),
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 24,
                       color: Colors.blue,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                 ),
-                SizedBox(height: 10),
+                const SizedBox(height: 10),
                 Text(
                   patientName,
-                  style: TextStyle(
+                  style: const TextStyle(
                     color: Colors.white,
                     fontSize: 20,
                   ),
                 ),
-                Text(
+                const Text(
                   "Diabetes Management",
                   style: TextStyle(
                     color: Colors.white70,
@@ -410,20 +419,21 @@ class _DashboardState extends State<Dashboard> {
               ],
             ),
           ),
-          _buildDrawerItem(context, Icons.dashboard, "Dashboard", Dashboard()),
-          _buildDrawerItem(context, Icons.bloodtype, "Blood Glucose", BloodGlucoseView()),
-          _buildDrawerItem(context, Icons.medication, "Medication", MedicationView()),
-          _buildDrawerItem(context, Icons.restaurant_menu, "Diet Plan", DietPlanView()),
-          _buildDrawerItem(context, Icons.directions_walk, "Exercise", ExerciseView()),
-          _buildDrawerItem(context, Icons.water_drop, "Water Intake", WaterIntakeView()),
-          _buildDrawerItem(context, Icons.calculate, "BMI Calculator", BMICalculator()),
-          _buildDrawerItem(context, Icons.healing, "Foot Care", Placeholder()),
-          _buildDrawerItem(context, Icons.school, "Appointment", DoctorAppointmentPage()),
-          _buildDrawerItem(context, Icons.insert_chart, "Insights", Placeholder()),
-          Divider(),
-          _buildDrawerItem(context, Icons.settings, "Settings", SettingsPage()),
-          _buildDrawerItem(context, Icons.info, "Disclaimer", Placeholder()),
-          _buildDrawerItem(context, Icons.help, "Help", Placeholder()),
+          _buildDrawerItem(context, Icons.dashboard, "Dashboard", const Dashboard()),
+          _buildDrawerItem(context, Icons.bloodtype, "Blood Glucose", const BloodGlucoseView()),
+          _buildDrawerItem(context, Icons.medication, "Medication", const MedicationView()),
+          _buildDrawerItem(context, Icons.restaurant_menu, "Diet Plan", const DietPlanView()),
+          _buildDrawerItem(context, Icons.directions_walk, "Exercise", const ExerciseView()),
+          _buildDrawerItem(context, Icons.water_drop, "Water Intake", const WaterIntakeView()),
+          _buildDrawerItem(context, Icons.calculate, "BMI Calculator", const BMICalculator()),
+          _buildDrawerItem(context, Icons.healing, "Foot Care", const Placeholder()),
+          _buildDrawerItem(context, Icons.school, "Appointment", const DoctorAppointmentPage()),
+          _buildDrawerItem(context, Icons.insert_chart, "Insights", const Placeholder()),
+          const Divider(),
+          _buildDrawerItem(context, Icons.person, "Profile", const ProfilePage()),
+          _buildDrawerItem(context, Icons.settings, "Settings", const SettingsPage()),
+          _buildDrawerItem(context, Icons.info, "Disclaimer", const Placeholder()),
+          _buildDrawerItem(context, Icons.help, "Help", const Placeholder()),
         ],
       ),
     );
@@ -435,7 +445,7 @@ class _DashboardState extends State<Dashboard> {
       leading: Icon(icon, color: Colors.blue[800]),
       title: Text(
         title,
-        style: TextStyle(
+        style: const TextStyle(
           fontSize: 16,
         ),
       ),
@@ -484,9 +494,9 @@ class Placeholder extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Coming Soon'),
+        title: const Text('Coming Soon'),
       ),
-      body: Center(
+      body: const Center(
         child: Text('This feature is not yet implemented'),
       ),
     );

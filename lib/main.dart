@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:provider/provider.dart';
-import 'package:sqflite/sqflite.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
-import 'package:path/path.dart';
 import 'dart:io' show Platform;
 import 'api_service.dart';
 import 'services/sync_service.dart';
@@ -14,7 +12,6 @@ import 'providers/blood_glucose_provider.dart';
 import 'utils/database_helper.dart';
 import 'dashboard.dart';
 import 'login_page.dart';
-import 'registration_page.dart';
 
 void main() async {
   // Ensure Flutter bindings are initialized

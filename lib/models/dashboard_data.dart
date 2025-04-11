@@ -58,7 +58,7 @@ class DashboardData {
     required this.vitalSigns,
     required this.stats,
     DateTime? lastUpdated,
-  }) : this.lastUpdated = lastUpdated ?? DateTime.now();
+  }) : lastUpdated = lastUpdated ?? DateTime.now();
 
   DashboardData.empty()
       : recentGlucoseReadings = [],

@@ -51,24 +51,24 @@ class _DoctorAppointmentPageState extends State<DoctorAppointmentPage> {
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
-        title: Text(
+        title: const Text(
           'Book Appointment',
           style: TextStyle(color: Colors.black87, fontWeight: FontWeight.w600),
         ),
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.black87),
+          icon: const Icon(Icons.arrow_back, color: Colors.black87),
           onPressed: () {
     // Navigate to your existing Dashboard widget
     Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (context) => Dashboard(),
+        builder: (context) => const Dashboard(),
       ),
     );
   },
         ),
         actions: [
           IconButton(
-            icon: Icon(Icons.notifications_outlined, color: Colors.black87),
+            icon: const Icon(Icons.notifications_outlined, color: Colors.black87),
             onPressed: () {
               // Handle notifications
             },
@@ -85,7 +85,7 @@ class _DoctorAppointmentPageState extends State<DoctorAppointmentPage> {
               child: TextField(
                 decoration: InputDecoration(
                   hintText: 'Search doctors, specialties...',
-                  prefixIcon: Icon(Icons.search),
+                  prefixIcon: const Icon(Icons.search),
                   filled: true,
                   fillColor: Colors.white,
                   border: OutlineInputBorder(
@@ -97,8 +97,8 @@ class _DoctorAppointmentPageState extends State<DoctorAppointmentPage> {
             ),
             
             // Doctor selection
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16.0),
               child: Text(
                 'Select Doctor',
                 style: TextStyle(
@@ -111,13 +111,13 @@ class _DoctorAppointmentPageState extends State<DoctorAppointmentPage> {
             SizedBox(
               height: 200,
               child: ListView.builder(
-                padding: EdgeInsets.all(8),
+                padding: const EdgeInsets.all(8),
                 scrollDirection: Axis.horizontal,
                 itemCount: doctors.length,
                 itemBuilder: (context, index) {
                   return Container(
                     width: 160,
-                    margin: EdgeInsets.all(8),
+                    margin: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(12),
@@ -137,16 +137,16 @@ class _DoctorAppointmentPageState extends State<DoctorAppointmentPage> {
                           backgroundColor: Colors.blue[50],
                           child: Icon(Icons.person, size: 40, color: Colors.blue[300]),
                         ),
-                        SizedBox(height: 8),
+                        const SizedBox(height: 8),
                         Text(
                           doctors[index]['name'],
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 14,
                           ),
                           textAlign: TextAlign.center,
                         ),
-                        SizedBox(height: 4),
+                        const SizedBox(height: 4),
                         Text(
                           doctors[index]['specialty'],
                           style: TextStyle(
@@ -154,14 +154,14 @@ class _DoctorAppointmentPageState extends State<DoctorAppointmentPage> {
                             fontSize: 12,
                           ),
                         ),
-                        SizedBox(height: 4),
+                        const SizedBox(height: 4),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Icon(Icons.star, color: Colors.amber, size: 16),
+                            const Icon(Icons.star, color: Colors.amber, size: 16),
                             Text(
                               ' ${doctors[index]['rating']}',
-                              style: TextStyle(fontSize: 12),
+                              style: const TextStyle(fontSize: 12),
                             ),
                           ],
                         ),
@@ -173,8 +173,8 @@ class _DoctorAppointmentPageState extends State<DoctorAppointmentPage> {
             ),
             
             // Date selection
-            Padding(
-              padding: const EdgeInsets.all(16.0),
+            const Padding(
+              padding: EdgeInsets.all(16.0),
               child: Text(
                 'Select Date',
                 style: TextStyle(
@@ -202,7 +202,7 @@ class _DoctorAppointmentPageState extends State<DoctorAppointmentPage> {
                     },
                     child: Container(
                       width: 60,
-                      margin: EdgeInsets.symmetric(horizontal: 8),
+                      margin: const EdgeInsets.symmetric(horizontal: 8),
                       decoration: BoxDecoration(
                         color: isSelected ? Colors.blue : Colors.white,
                         borderRadius: BorderRadius.circular(12),
@@ -224,7 +224,7 @@ class _DoctorAppointmentPageState extends State<DoctorAppointmentPage> {
                               fontWeight: FontWeight.w500,
                             ),
                           ),
-                          SizedBox(height: 8),
+                          const SizedBox(height: 8),
                           Text(
                             '${date.day}',
                             style: TextStyle(
@@ -242,8 +242,8 @@ class _DoctorAppointmentPageState extends State<DoctorAppointmentPage> {
             ),
             
             // Time selection
-            Padding(
-              padding: const EdgeInsets.all(16.0),
+            const Padding(
+              padding: EdgeInsets.all(16.0),
               child: Text(
                 'Available Time Slots',
                 style: TextStyle(
@@ -267,7 +267,7 @@ class _DoctorAppointmentPageState extends State<DoctorAppointmentPage> {
                       });
                     },
                     child: Container(
-                      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                       decoration: BoxDecoration(
                         color: isSelected ? Colors.blue : Colors.white,
                         borderRadius: BorderRadius.circular(8),
@@ -292,7 +292,7 @@ class _DoctorAppointmentPageState extends State<DoctorAppointmentPage> {
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: Container(
-                padding: EdgeInsets.all(16),
+                padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(12),
@@ -307,48 +307,48 @@ class _DoctorAppointmentPageState extends State<DoctorAppointmentPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
+                    const Text(
                       'Appointment Details',
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    SizedBox(height: 12),
-                    Row(
+                    const SizedBox(height: 12),
+                    const Row(
                       children: [
                         Icon(Icons.person_outline, color: Colors.grey),
                         SizedBox(width: 8),
                         Text('Dr. Sarah Johnson', style: TextStyle(fontSize: 14)),
                       ],
                     ),
-                    SizedBox(height: 8),
-                    Row(
+                    const SizedBox(height: 8),
+                    const Row(
                       children: [
                         Icon(Icons.medical_services_outlined, color: Colors.grey),
                         SizedBox(width: 8),
                         Text('Cardiologist', style: TextStyle(fontSize: 14)),
                       ],
                     ),
-                    SizedBox(height: 8),
+                    const SizedBox(height: 8),
                     Row(
                       children: [
-                        Icon(Icons.calendar_today, color: Colors.grey),
-                        SizedBox(width: 8),
+                        const Icon(Icons.calendar_today, color: Colors.grey),
+                        const SizedBox(width: 8),
                         Text(
                           '${selectedDate.day}/${selectedDate.month}/${selectedDate.year}',
-                          style: TextStyle(fontSize: 14),
+                          style: const TextStyle(fontSize: 14),
                         ),
                       ],
                     ),
-                    SizedBox(height: 8),
+                    const SizedBox(height: 8),
                     Row(
                       children: [
-                        Icon(Icons.access_time, color: Colors.grey),
-                        SizedBox(width: 8),
+                        const Icon(Icons.access_time, color: Colors.grey),
+                        const SizedBox(width: 8),
                         Text(
                           selectedTimeSlot.isEmpty ? 'No time selected' : selectedTimeSlot,
-                          style: TextStyle(fontSize: 14),
+                          style: const TextStyle(fontSize: 14),
                         ),
                       ],
                     ),
@@ -365,12 +365,12 @@ class _DoctorAppointmentPageState extends State<DoctorAppointmentPage> {
                   // Handle appointment booking
                 },
                 style: ElevatedButton.styleFrom(
-                  minimumSize: Size(double.infinity, 54),
+                  minimumSize: const Size(double.infinity, 54),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
                 ),
-                child: Text(
+                child: const Text(
                   'Book Appointment',
                   style: TextStyle(fontSize: 16),
                 ),

@@ -48,29 +48,29 @@ class _BMICalculatorViewState extends State<BMICalculator> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('BMI Calculator'),
+        title: const Text('BMI Calculator'),
         backgroundColor: Colors.blue,
       ),
       body: SingleChildScrollView(
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Card(
               elevation: 4,
               child: Padding(
-                padding: EdgeInsets.all(16),
+                padding: const EdgeInsets.all(16),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
+                    const Text(
                       'Your BMI',
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    SizedBox(height: 20),
+                    const SizedBox(height: 20),
                     Center(
                       child: Container(
                         width: 150,
@@ -105,15 +105,15 @@ class _BMICalculatorViewState extends State<BMICalculator> {
                         ),
                       ),
                     ),
-                    SizedBox(height: 20),
-                    Text(
+                    const SizedBox(height: 20),
+                    const Text(
                       'BMI Categories:',
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    SizedBox(height: 8),
+                    const SizedBox(height: 8),
                     _buildCategoryRow('Underweight', 'Less than 18.5', Colors.blue),
                     _buildCategoryRow('Normal weight', '18.5 - 24.9', Colors.green),
                     _buildCategoryRow('Overweight', '25 - 29.9', Colors.orange),
@@ -122,23 +122,23 @@ class _BMICalculatorViewState extends State<BMICalculator> {
                 ),
               ),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             Card(
               elevation: 4,
               child: Padding(
-                padding: EdgeInsets.all(16),
+                padding: const EdgeInsets.all(16),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
+                    const Text(
                       'Calculate Your BMI',
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    SizedBox(height: 16),
-                    Text('Height (cm)'),
+                    const SizedBox(height: 16),
+                    const Text('Height (cm)'),
                     Slider(
                       value: height,
                       min: 120,
@@ -153,8 +153,8 @@ class _BMICalculatorViewState extends State<BMICalculator> {
                       },
                     ),
                     Text('${height.round()} cm'),
-                    SizedBox(height: 16),
-                    Text('Weight (kg)'),
+                    const SizedBox(height: 16),
+                    const Text('Weight (kg)'),
                     Slider(
                       value: weight,
                       min: 30,
@@ -169,22 +169,22 @@ class _BMICalculatorViewState extends State<BMICalculator> {
                       },
                     ),
                     Text('${weight.round()} kg'),
-                    SizedBox(height: 16),
+                    const SizedBox(height: 16),
                     Center(
                       child: ElevatedButton(
                         onPressed: calculateBMI,
                         style: ElevatedButton.styleFrom(
-                          padding: EdgeInsets.symmetric(horizontal: 32, vertical: 12),
+                          padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
                         ),
-                        child: Text('Calculate'),
+                        child: const Text('Calculate'),
                       ),
                     ),
                   ],
                 ),
               ),
             ),
-            SizedBox(height: 20),
-            Card(
+            const SizedBox(height: 20),
+            const Card(
               elevation: 4,
               child: Padding(
                 padding: EdgeInsets.all(16),
@@ -220,7 +220,7 @@ class _BMICalculatorViewState extends State<BMICalculator> {
 
   Widget _buildCategoryRow(String category, String range, Color color) {
     return Padding(
-      padding: EdgeInsets.symmetric(vertical: 4),
+      padding: const EdgeInsets.symmetric(vertical: 4),
       child: Row(
         children: [
           Container(
@@ -231,10 +231,10 @@ class _BMICalculatorViewState extends State<BMICalculator> {
               shape: BoxShape.circle,
             ),
           ),
-          SizedBox(width: 8),
+          const SizedBox(width: 8),
           Text(
             category,
-            style: TextStyle(fontWeight: FontWeight.bold),
+            style: const TextStyle(fontWeight: FontWeight.bold),
           ),
           Text(': $range'),
         ],

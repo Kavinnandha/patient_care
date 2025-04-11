@@ -7,32 +7,32 @@ class DietPlanView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Diet Plan"),
+        title: const Text("Diet Plan"),
         backgroundColor: Colors.white,
         foregroundColor: Colors.black87,
         elevation: 2,
       ),
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: EdgeInsets.all(16),
+          padding: const EdgeInsets.all(16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Nutrition Summary
               Card(
                 child: Padding(
-                  padding: EdgeInsets.all(16),
+                  padding: const EdgeInsets.all(16),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
+                      const Text(
                         "Today's Nutrition",
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      SizedBox(height: 16),
+                      const SizedBox(height: 16),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: [
@@ -47,24 +47,24 @@ class DietPlanView extends StatelessWidget {
                 ),
               ),
 
-              SizedBox(height: 24),
-              Text(
+              const SizedBox(height: 24),
+              const Text(
                 "Today's Meals",
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              SizedBox(height: 12),
+              const SizedBox(height: 12),
 
               // Meals List
               ListView.builder(
                 shrinkWrap: true,
-                physics: NeverScrollableScrollPhysics(),
+                physics: const NeverScrollableScrollPhysics(),
                 itemCount: 3,
                 itemBuilder: (context, index) {
                   return Card(
-                    margin: EdgeInsets.only(bottom: 12),
+                    margin: const EdgeInsets.only(bottom: 12),
                     child: ListTile(
                       leading: Icon(
                         index == 0 ? Icons.wb_sunny :
@@ -81,9 +81,9 @@ class DietPlanView extends StatelessWidget {
                         index == 1 ? "Grilled chicken salad" : "Not logged yet",
                       ),
                       trailing: index < 2
-                          ? Text("✓")
+                          ? const Text("✓")
                           : OutlinedButton(
-                        child: Text("Log"),
+                        child: const Text("Log"),
                         onPressed: () {},
                       ),
                     ),
@@ -91,25 +91,25 @@ class DietPlanView extends StatelessWidget {
                 },
               ),
 
-              SizedBox(height: 24),
-              Text(
+              const SizedBox(height: 24),
+              const Text(
                 "Recommended Foods",
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              SizedBox(height: 12),
+              const SizedBox(height: 12),
 
               // Recommended Foods
               Card(
                 child: Padding(
-                  padding: EdgeInsets.all(16),
+                  padding: const EdgeInsets.all(16),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text("Low Glycemic Index Foods:"),
-                      SizedBox(height: 8),
+                      const Text("Low Glycemic Index Foods:"),
+                      const SizedBox(height: 8),
                       Wrap(
                         spacing: 8,
                         runSpacing: 8,
@@ -129,7 +129,7 @@ class DietPlanView extends StatelessWidget {
       floatingActionButton: FloatingActionButton(
         onPressed: () {},
         backgroundColor: Colors.blue,
-        child: Icon(Icons.add),
+        child: const Icon(Icons.add),
       ),
     );
   }
@@ -147,23 +147,23 @@ class DietPlanView extends StatelessWidget {
           child: Center(
             child: Text(
               value,
-              style: TextStyle(
+              style: const TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 16,
               ),
             ),
           ),
         ),
-        SizedBox(height: 8),
+        const SizedBox(height: 8),
         Text(
           label,
-          style: TextStyle(
+          style: const TextStyle(
             fontSize: 14,
           ),
         ),
         Text(
           "of $total",
-          style: TextStyle(
+          style: const TextStyle(
             fontSize: 12,
             color: Colors.grey,
           ),

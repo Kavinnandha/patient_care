@@ -7,21 +7,21 @@ class ExerciseView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Exercise"),
+        title: const Text("Exercise"),
         backgroundColor: Colors.white,
         foregroundColor: Colors.black87,
         elevation: 2,
       ),
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: EdgeInsets.all(16),
+          padding: const EdgeInsets.all(16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Steps Counter
               Card(
                 child: Padding(
-                  padding: EdgeInsets.all(20),
+                  padding: const EdgeInsets.all(20),
                   child: Column(
                     children: [
                       Text(
@@ -31,7 +31,7 @@ class ExerciseView extends StatelessWidget {
                           color: Colors.grey[700],
                         ),
                       ),
-                      SizedBox(height: 16),
+                      const SizedBox(height: 16),
                       Text(
                         "3,245",
                         style: TextStyle(
@@ -40,23 +40,23 @@ class ExerciseView extends StatelessWidget {
                           color: Colors.blue[800],
                         ),
                       ),
-                      SizedBox(height: 8),
-                      Text(
+                      const SizedBox(height: 8),
+                      const Text(
                         "Goal: 10,000 steps",
                         style: TextStyle(
                           fontSize: 14,
                           color: Colors.grey,
                         ),
                       ),
-                      SizedBox(height: 16),
+                      const SizedBox(height: 16),
                       LinearProgressIndicator(
                         value: 0.32,
                         minHeight: 10,
                         backgroundColor: Colors.grey[200],
-                        valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),
+                        valueColor: const AlwaysStoppedAnimation<Color>(Colors.blue),
                       ),
-                      SizedBox(height: 8),
-                      Text(
+                      const SizedBox(height: 8),
+                      const Text(
                         "32% of daily goal",
                         style: TextStyle(
                           fontSize: 14,
@@ -68,24 +68,24 @@ class ExerciseView extends StatelessWidget {
                 ),
               ),
 
-              SizedBox(height: 24),
-              Text(
+              const SizedBox(height: 24),
+              const Text(
                 "Recommended Exercises",
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              SizedBox(height: 12),
+              const SizedBox(height: 12),
 
               // Exercise List
               ListView.builder(
                 shrinkWrap: true,
-                physics: NeverScrollableScrollPhysics(),
+                physics: const NeverScrollableScrollPhysics(),
                 itemCount: 3,
                 itemBuilder: (context, index) {
                   return Card(
-                    margin: EdgeInsets.only(bottom: 12),
+                    margin: const EdgeInsets.only(bottom: 12),
                     child: ListTile(
                       leading: Icon(
                         index == 0 ? Icons.directions_walk :
@@ -101,7 +101,7 @@ class ExerciseView extends StatelessWidget {
                         index == 1 ? "20 min, 2 times/week" : "15 min, 2 times/week",
                       ),
                       trailing: OutlinedButton(
-                        child: Text("Details"),
+                        child: const Text("Details"),
                         onPressed: () {},
                       ),
                     ),
@@ -109,32 +109,32 @@ class ExerciseView extends StatelessWidget {
                 },
               ),
 
-              SizedBox(height: 24),
-              Text(
+              const SizedBox(height: 24),
+              const Text(
                 "Exercise Tips",
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              SizedBox(height: 12),
+              const SizedBox(height: 12),
 
               Card(
                 child: Padding(
-                  padding: EdgeInsets.all(16),
+                  padding: const EdgeInsets.all(16),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
+                      const Text(
                         "Remember to check your blood glucose before and after exercise. Carry a fast-acting carbohydrate source with you during exercise in case of hypoglycemia.",
                         style: TextStyle(
                           fontSize: 14,
                         ),
                       ),
-                      SizedBox(height: 12),
+                      const SizedBox(height: 12),
                       OutlinedButton.icon(
-                        icon: Icon(Icons.lightbulb_outline),
-                        label: Text("More Exercise Tips"),
+                        icon: const Icon(Icons.lightbulb_outline),
+                        label: const Text("More Exercise Tips"),
                         onPressed: () {},
                       ),
                     ],
@@ -148,7 +148,7 @@ class ExerciseView extends StatelessWidget {
       floatingActionButton: FloatingActionButton(
         onPressed: () {},
         backgroundColor: Colors.blue,
-        child: Icon(Icons.add),
+        child: const Icon(Icons.add),
       ),
     );
   }

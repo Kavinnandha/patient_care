@@ -4,7 +4,7 @@ enum Environment {
 }
 
 class EnvConfig {
-  static final Environment _environment = Environment.dev;
+  static const Environment _environment = Environment.dev;
 
   static String get apiBaseUrl {
     switch (_environment) {

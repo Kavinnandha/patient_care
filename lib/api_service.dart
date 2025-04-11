@@ -11,17 +11,43 @@ class ApiEndpoints {
   static const String glucoseReadings = 'glucose-readings';
   static const String foodIntake = 'food-intake';
   static const String insulinRecords = 'insulin-records';
+  static const String waterIntake = 'water-intake';
 }
 
 class ApiService {
   final String baseUrl = EnvConfig.apiBaseUrl;
-  
+  String? _userId;
+
+  Future<String> getUserId() async {
+    if (_userId != null) return _userId!;
+    final prefs = await SharedPreferences.getInstance();
+    _userId = prefs.getString('userId') ?? '';
+    return _userId!;
+  }
+
+  Future<List<dynamic>> getWaterIntakeRecords(String userId) async {
+    final response = await get('${ApiEndpoints.waterIntake}/$userId');
+    return response['data'] ?? [];
+  }
+
+  Future<void> addWaterIntakeRecord(String userId, double amount) async {
+    await post(ApiEndpoints.waterIntake, {
+      'userId': userId,
+      'amount': amount,
+      'date': DateTime.now().toIso8601String(),
+    });
+  }
+
+  Future<void> deleteWaterIntakeRecord(String id) async {
+    await delete('${ApiEndpoints.waterIntake}/$id');
+  }
+
   // Get the auth token from shared preferences
   Future<String?> _getToken() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString('auth_token');
   }
-  
+
   // Generic GET request
   Future<dynamic> get(String endpoint) async {
     final token = await _getToken();
@@ -34,10 +60,10 @@ class ApiService {
       Uri.parse('$baseUrl/$endpoint'),
       headers: headers,
     );
-    
+
     return _handleResponse(response);
   }
-  
+
   // Generic POST request
   Future<dynamic> post(String endpoint, Map<String, dynamic> data) async {
     final token = await _getToken();
@@ -51,10 +77,10 @@ class ApiService {
       headers: headers,
       body: jsonEncode(data),
     );
-    
+
     return _handleResponse(response);
   }
-  
+
   // Generic PUT request
   Future<dynamic> put(String endpoint, Map<String, dynamic> data) async {
     final token = await _getToken();
@@ -68,10 +94,10 @@ class ApiService {
       headers: headers,
       body: jsonEncode(data),
     );
-    
+
     return _handleResponse(response);
   }
-  
+
   // Generic DELETE request
   Future<dynamic> delete(String endpoint) async {
     final token = await _getToken();
@@ -84,15 +110,15 @@ class ApiService {
       Uri.parse('$baseUrl/$endpoint'),
       headers: headers,
     );
-    
+
     return _handleResponse(response);
   }
-  
+
   // Handle API responses
   dynamic _handleResponse(http.Response response) {
     try {
       final data = jsonDecode(response.body);
-      
+
       if (response.statusCode >= 200 && response.statusCode < 300) {
         return data;
       } else if (response.statusCode == 401) {
@@ -121,34 +147,34 @@ class ApiException implements Exception {
   final String message;
   final int statusCode;
   final String body;
-  
+
   ApiException(this.message, this.statusCode, this.body);
-  
+
   @override
   String toString() => message;
 }
 
 class UnauthorizedException implements Exception {
   final String message;
-  
+
   UnauthorizedException(this.message);
-  
+
   @override
   String toString() => message;
 }
 
 class AuthService {
   final ApiService _apiService;
-  
+
   AuthService(this._apiService);
-  
+
   Future<bool> login(String username, String password) async {
     try {
       final response = await _apiService.post('auth/login', {
         'username': username,
         'password': password,
       });
-      
+
       if (response['token'] != null) {
         final prefs = await SharedPreferences.getInstance();
         await prefs.setString('auth_token', response['token']);
@@ -163,7 +189,7 @@ class AuthService {
       return false;
     }
   }
-  
+
   Future<void> logout() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove('auth_token');
@@ -171,7 +197,7 @@ class AuthService {
     await prefs.remove('email');
     await prefs.remove('user_profile');
   }
-  
+
   Future<bool> isLoggedIn() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString('auth_token') != null;

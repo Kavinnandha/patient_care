@@ -99,7 +99,7 @@ class MedicationView extends StatelessWidget {
             
             // Action button or status
             taken
-                ? Icon(Icons.check_circle, color: Colors.green)
+                ? const Icon(Icons.check_circle, color: Colors.green)
                 : ElevatedButton(
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.blue,
@@ -127,11 +127,11 @@ class MedicationView extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Insulin header
-            Row(
+            const Row(
               children: [
                 Icon(Icons.medical_services, color: Colors.blue),
-                const SizedBox(width: 10),
-                const Text("Before dinner (6:30 PM)",
+                SizedBox(width: 10),
+                Text("Before dinner (6:30 PM)",
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
               ],
             ),
@@ -144,11 +144,11 @@ class MedicationView extends StatelessWidget {
                 color: Colors.blue.shade50,
                 borderRadius: BorderRadius.circular(8),
               ),
-              child: Row(
+              child: const Row(
                 children: [
                   Icon(Icons.water_drop, color: Colors.blue),
-                  const SizedBox(width: 8),
-                  const Text("12 units", 
+                  SizedBox(width: 8),
+                  Text("12 units", 
                     style: TextStyle(fontWeight: FontWeight.bold)),
                 ],
               ),
@@ -170,8 +170,8 @@ class MedicationView extends StatelessWidget {
             ),
             TextButton.icon(
               onPressed: () {},
-              icon: Icon(Icons.info_outline, size: 16, color: Colors.blue),
-              label: Text("Insulin Guide", style: TextStyle(color: Colors.blue)),
+              icon: const Icon(Icons.info_outline, size: 16, color: Colors.blue),
+              label: const Text("Insulin Guide", style: TextStyle(color: Colors.blue)),
             ),
           ],
         ),
