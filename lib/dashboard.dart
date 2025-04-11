@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'providers/dashboard_provider.dart';
+import 'providers/auth_provider.dart';
 import 'package:patient_care/setting.dart';
 import 'diet.dart';
 import 'exercise.dart';
@@ -13,7 +14,7 @@ import 'medication.dart';
 import 'appointment.dart';
 
 class Dashboard extends StatefulWidget {
-  const Dashboard({Key? key}) : super(key: key);
+  const Dashboard({super.key});
 
   @override
   _DashboardState createState() => _DashboardState();
@@ -27,7 +28,7 @@ class _DashboardState extends State<Dashboard> {
     super.initState();
     // Fetch dashboard data when the screen loads
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      Provider.of<DashboardProvider>(context, listen: false).fetchDashboardSummary();
+      Provider.of<DashboardProvider>(context, listen: false).refreshDashboard();
     });
   }
 
@@ -40,7 +41,7 @@ class _DashboardState extends State<Dashboard> {
   Future<void> _onRefresh() async {
     try {
       await Provider.of<DashboardProvider>(context, listen: false)
-          .fetchDashboardSummary();
+          .refreshDashboard();
       _refreshController.refreshCompleted();
     } catch (e) {
       _refreshController.refreshFailed();
@@ -49,9 +50,11 @@ class _DashboardState extends State<Dashboard> {
 
   @override
   Widget build(BuildContext context) {
-    final double glucoseLevel = 105.0;
+    final dashboardProvider = Provider.of<DashboardProvider>(context);
+    final double? glucoseLevel = dashboardProvider.currentGlucoseLevel;
     final String glucoseUnit = 'mg/dL';
-    final String patientName = "John Doe";
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    final String patientName = authProvider.username ?? "Patient";
 
     return Scaffold(
       backgroundColor: Color(0xFFF4F7FA),
@@ -130,26 +133,26 @@ class _DashboardState extends State<Dashboard> {
                 _buildDashboardCard(
                   "Medication Adherence",
                   Icons.medication,
-                  "Today: 2/3 taken",
-                  "Next: Metformin (500mg) at 2:00 PM",
+                  "Today: ${dashboardProvider.medicationsTaken}/${dashboardProvider.totalMedications} taken",
+                  "Tap to view medications",
                   Colors.orange,
                   context,
                   MedicationView(),
                 ),
                 _buildDashboardCard(
-                  "Water Intake",
-                  Icons.water_drop,
-                  "1.2L / 2.5L",
-                  "48% of daily goal",
+                  "Blood Glucose",
+                  Icons.bloodtype,
+                  "${dashboardProvider.averageGlucoseToday?.toStringAsFixed(1) ?? 'No data'} $glucoseUnit avg",
+                  "Today's average",
                   Colors.blue,
                   context,
                   WaterIntakeView(),
                 ),
                 _buildDashboardCard(
-                  "Today's Activity",
-                  Icons.directions_walk,
-                  "3,245 steps",
-                  "32% of daily goal",
+                  "Vital Signs",
+                  Icons.favorite,
+                  _formatVitalSigns(dashboardProvider.latestVitals),
+                  "Latest readings",
                   Colors.green,
                   context,
                   ExerciseView(),
@@ -157,8 +160,8 @@ class _DashboardState extends State<Dashboard> {
                 _buildDashboardCard(
                   "Diet Plan",
                   Icons.restaurant_menu,
-                  "1,450 cal consumed",
-                  "2 meals, 1 snack logged today",
+                  "${dashboardProvider.totalCaloriesToday} cal consumed",
+                  "Today's intake",
                   Colors.purple,
                   context,
                   DietPlanView(),
@@ -172,8 +175,24 @@ class _DashboardState extends State<Dashboard> {
   }
 
   // Glucose Level Card
+  String _formatVitalSigns(Map<String, dynamic>? vitals) {
+    if (vitals == null) return 'No data available';
+    
+    final List<String> readings = [];
+    
+    if (vitals['blood_pressure_systolic'] != null && vitals['blood_pressure_diastolic'] != null) {
+      readings.add('${vitals['blood_pressure_systolic']}/${vitals['blood_pressure_diastolic']} mmHg');
+    }
+    
+    if (vitals['heart_rate'] != null) {
+      readings.add('${vitals['heart_rate']} bpm');
+    }
+    
+    return readings.isEmpty ? 'No data available' : readings.join(' • ');
+  }
+
   Widget _buildGlucoseLevelCard(
-    double glucoseLevel, 
+    double? glucoseLevel, 
     String glucoseUnit, 
     BuildContext context
   ) {
@@ -228,11 +247,11 @@ class _DashboardState extends State<Dashboard> {
                 textBaseline: TextBaseline.alphabetic,
                 children: [
                   Text(
-                    glucoseLevel.toString(),
+                    glucoseLevel?.toString() ?? 'N/A',
                     style: GoogleFonts.roboto(
                       fontSize: 40,
                       fontWeight: FontWeight.bold,
-                      color: _getGlucoseColor(glucoseLevel),
+                      color: glucoseLevel != null ? _getGlucoseColor(glucoseLevel) : Colors.grey,
                     ),
                   ),
                   const SizedBox(width: 4),
@@ -246,15 +265,16 @@ class _DashboardState extends State<Dashboard> {
                 ],
               ),
               const SizedBox(height: 8),
-              Text(
-                _getGlucoseStatus(glucoseLevel),
-                style: GoogleFonts.poppins(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                  color: _getGlucoseColor(glucoseLevel),
-                  letterSpacing: 0.5,
+              if (glucoseLevel != null)
+                Text(
+                  _getGlucoseStatus(glucoseLevel),
+                  style: GoogleFonts.poppins(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: _getGlucoseColor(glucoseLevel),
+                    letterSpacing: 0.5,
+                  ),
                 ),
-              ),
             ],
           ),
         ),
@@ -458,6 +478,8 @@ class _DashboardState extends State<Dashboard> {
 
 // Placeholder for unimplemented screens
 class Placeholder extends StatelessWidget {
+  const Placeholder({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 class DietPlanView extends StatelessWidget {
+  const DietPlanView({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -126,8 +128,8 @@ class DietPlanView extends StatelessWidget {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {},
-        child: Icon(Icons.add),
         backgroundColor: Colors.blue,
+        child: Icon(Icons.add),
       ),
     );
   }

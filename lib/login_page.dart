@@ -1,14 +1,50 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
+import 'providers/auth_provider.dart';
+import 'registration_page.dart';
 
-class LoginPage extends StatefulWidget{
-    const LoginPage({Key? key}) : super(key: key);
+class LoginPage extends StatefulWidget {
+    const LoginPage({super.key});
 
     @override
     State<LoginPage> createState() => _LoginPageState();
 }
 
 class _LoginPageState extends State<LoginPage> {
+  final _usernameController = TextEditingController();
+  final _passwordController = TextEditingController();
+  bool _isLoading = false;
+  String? _errorMessage;
+
+  Future<void> _handleLogin() async {
+    try {
+      final success = await context.read<AuthProvider>().login(
+        _usernameController.text,
+        _passwordController.text,
+      );
+
+      if (!success && mounted) {
+        setState(() {
+          _errorMessage = 'Invalid username or password';
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _errorMessage = e.toString();
+        });
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    _usernameController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
     @override
     Widget build(BuildContext context){
         return Scaffold(
@@ -47,9 +83,10 @@ class _LoginPageState extends State<LoginPage> {
                         child: Padding(
                             padding: const EdgeInsets.only(left: 20.0),
                             child: TextField(
+                            controller: _usernameController,
                             decoration: InputDecoration(
                             border: InputBorder.none,
-                            hintText: 'Email',
+                            hintText: 'Username',
                             ),
                         ), // textfield
                         ), // Padding
@@ -67,6 +104,7 @@ class _LoginPageState extends State<LoginPage> {
                         child: Padding(
                             padding: const EdgeInsets.only(left: 20.0),
                             child: TextField(
+                            controller: _passwordController,
                             obscureText: true,
                             decoration: InputDecoration(
                             border: InputBorder.none,
@@ -79,19 +117,82 @@ class _LoginPageState extends State<LoginPage> {
                     SizedBox(height: 10),
                     Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 25.0),
-                        child: Container(
-                        padding: EdgeInsets.all(17),
-                        decoration: BoxDecoration(color: Colors.deepPurple,
-                            borderRadius: BorderRadius.circular(12)),
-                        child: Center(
-                            child: Text('Sign In',
-                            style: TextStyle(color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 18,),
+                        child: Column(
+                          children: [
+                            if (_errorMessage != null)
+                              Padding(
+                                padding: const EdgeInsets.only(bottom: 10.0),
+                                child: Text(
+                                  _errorMessage!,
+                                  style: TextStyle(
+                                    color: Colors.red,
+                                    fontSize: 14,
+                                  ),
+                                ),
+                              ),
+                            Consumer<AuthProvider>(
+                              builder: (context, auth, _) => GestureDetector(
+                                onTap: auth.isLoading ? null : _handleLogin,
+                                child: Container(
+                                  padding: EdgeInsets.all(17),
+                                  decoration: BoxDecoration(
+                                    color: auth.isLoading ? Colors.grey : Colors.deepPurple,
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  child: Center(
+                                    child: auth.isLoading
+                                        ? SizedBox(
+                                            width: 20,
+                                            height: 20,
+                                            child: CircularProgressIndicator(
+                                              strokeWidth: 2,
+                                              valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                            ),
+                                          )
+                                        : Text(
+                                            'Sign In',
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 18,
+                                            ),
+                                          ),
+                                  ),
+                                ),
+                              ),
                             ),
-                        ) // Center
-                        ) // container
-                        ) // Padding
+                            SizedBox(height: 20),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  'Don\'t have an account? ',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                GestureDetector(
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => const RegistrationPage(),
+                                      ),
+                                    );
+                                  },
+                                  child: Text(
+                                    'Register here',
+                                    style: TextStyle(
+                                      color: Colors.blue,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                        ), // Padding
                     ],
                 ), // column
                 ), // center
@@ -99,4 +200,3 @@ class _LoginPageState extends State<LoginPage> {
             ); // scaffold
     }
 }
-

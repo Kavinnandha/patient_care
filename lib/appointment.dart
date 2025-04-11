@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:patient_care/dashboard.dart';
 
 class DoctorAppointmentPage extends StatefulWidget {
+  const DoctorAppointmentPage({super.key});
+
   @override
   _DoctorAppointmentPageState createState() => _DoctorAppointmentPageState();
 }
@@ -106,7 +108,7 @@ class _DoctorAppointmentPageState extends State<DoctorAppointmentPage> {
               ),
             ),
             
-            Container(
+            SizedBox(
               height: 200,
               child: ListView.builder(
                 padding: EdgeInsets.all(8),
@@ -182,7 +184,7 @@ class _DoctorAppointmentPageState extends State<DoctorAppointmentPage> {
               ),
             ),
             
-            Container(
+            SizedBox(
               height: 100,
               child: ListView.builder(
                 scrollDirection: Axis.horizontal,
@@ -362,15 +364,15 @@ class _DoctorAppointmentPageState extends State<DoctorAppointmentPage> {
                 onPressed: () {
                   // Handle appointment booking
                 },
-                child: Text(
-                  'Book Appointment',
-                  style: TextStyle(fontSize: 16),
-                ),
                 style: ElevatedButton.styleFrom(
                   minimumSize: Size(double.infinity, 54),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
+                ),
+                child: Text(
+                  'Book Appointment',
+                  style: TextStyle(fontSize: 16),
                 ),
               ),
             ),

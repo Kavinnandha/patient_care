@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 class WaterIntakeView extends StatelessWidget {
+  const WaterIntakeView({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

@@ -3,6 +3,8 @@ import 'api_service.dart';
 import 'package:provider/provider.dart';
 
 class BloodGlucoseView extends StatefulWidget {
+  const BloodGlucoseView({super.key});
+
   @override
   _BloodGlucoseViewState createState() => _BloodGlucoseViewState();
 }

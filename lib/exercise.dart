@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 class ExerciseView extends StatelessWidget {
+  const ExerciseView({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -145,8 +147,8 @@ class ExerciseView extends StatelessWidget {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {},
-        child: Icon(Icons.add),
         backgroundColor: Colors.blue,
+        child: Icon(Icons.add),
       ),
     );
   }

@@ -1,18 +1,20 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'config/env.dart';
 
 class ApiEndpoints {
-  static const String bloodGlucose = 'blood-glucose';
-  static const String medication = 'medication';
-  static const String waterIntake = 'water-intake';
-  static const String activity = 'activity';
-  static const String diet = 'diet';
-  static const String dashboard = 'dashboard/summary';
+  static const String profiles = 'profiles';
+  static const String medicalRecords = 'medical-records';
+  static const String medications = 'medications';
+  static const String vitalSigns = 'vital-signs';
+  static const String glucoseReadings = 'glucose-readings';
+  static const String foodIntake = 'food-intake';
+  static const String insulinRecords = 'insulin-records';
 }
 
 class ApiService {
-  final String baseUrl = 'https://your-api-url.com/api';
+  final String baseUrl = EnvConfig.apiBaseUrl;
   
   // Get the auth token from shared preferences
   Future<String?> _getToken() async {
@@ -23,12 +25,14 @@ class ApiService {
   // Generic GET request
   Future<dynamic> get(String endpoint) async {
     final token = await _getToken();
+    final headers = Map<String, String>.from(EnvConfig.headers);
+    if (token != null) {
+      headers['Authorization'] = 'Bearer $token';
+    }
+
     final response = await http.get(
       Uri.parse('$baseUrl/$endpoint'),
-      headers: {
-        'Content-Type': 'application/json',
-        if (token != null) 'Authorization': 'Bearer $token',
-      },
+      headers: headers,
     );
     
     return _handleResponse(response);
@@ -37,12 +41,14 @@ class ApiService {
   // Generic POST request
   Future<dynamic> post(String endpoint, Map<String, dynamic> data) async {
     final token = await _getToken();
+    final headers = Map<String, String>.from(EnvConfig.headers);
+    if (token != null) {
+      headers['Authorization'] = 'Bearer $token';
+    }
+
     final response = await http.post(
       Uri.parse('$baseUrl/$endpoint'),
-      headers: {
-        'Content-Type': 'application/json',
-        if (token != null) 'Authorization': 'Bearer $token',
-      },
+      headers: headers,
       body: jsonEncode(data),
     );
     
@@ -52,12 +58,14 @@ class ApiService {
   // Generic PUT request
   Future<dynamic> put(String endpoint, Map<String, dynamic> data) async {
     final token = await _getToken();
+    final headers = Map<String, String>.from(EnvConfig.headers);
+    if (token != null) {
+      headers['Authorization'] = 'Bearer $token';
+    }
+
     final response = await http.put(
       Uri.parse('$baseUrl/$endpoint'),
-      headers: {
-        'Content-Type': 'application/json',
-        if (token != null) 'Authorization': 'Bearer $token',
-      },
+      headers: headers,
       body: jsonEncode(data),
     );
     
@@ -67,12 +75,14 @@ class ApiService {
   // Generic DELETE request
   Future<dynamic> delete(String endpoint) async {
     final token = await _getToken();
+    final headers = Map<String, String>.from(EnvConfig.headers);
+    if (token != null) {
+      headers['Authorization'] = 'Bearer $token';
+    }
+
     final response = await http.delete(
       Uri.parse('$baseUrl/$endpoint'),
-      headers: {
-        'Content-Type': 'application/json',
-        if (token != null) 'Authorization': 'Bearer $token',
-      },
+      headers: headers,
     );
     
     return _handleResponse(response);
@@ -80,13 +90,26 @@ class ApiService {
   
   // Handle API responses
   dynamic _handleResponse(http.Response response) {
-    if (response.statusCode >= 200 && response.statusCode < 300) {
-      return jsonDecode(response.body);
-    } else if (response.statusCode == 401) {
-      throw UnauthorizedException('Authentication required');
-    } else {
+    try {
+      final data = jsonDecode(response.body);
+      
+      if (response.statusCode >= 200 && response.statusCode < 300) {
+        return data;
+      } else if (response.statusCode == 401) {
+        throw UnauthorizedException('Authentication required');
+      } else {
+        throw ApiException(
+          data['error'] ?? 'API Error: ${response.statusCode}',
+          response.statusCode,
+          response.body,
+        );
+      }
+    } catch (e) {
+      if (e is ApiException || e is UnauthorizedException) {
+        rethrow;
+      }
       throw ApiException(
-        'API Error: ${response.statusCode}',
+        'Failed to process response: ${e.toString()}',
         response.statusCode,
         response.body,
       );
@@ -129,6 +152,9 @@ class AuthService {
       if (response['token'] != null) {
         final prefs = await SharedPreferences.getInstance();
         await prefs.setString('auth_token', response['token']);
+        await prefs.setString('username', response['user']['username']);
+        await prefs.setString('email', response['user']['email']);
+        await prefs.setString('user_profile', jsonEncode(response['profile']));
         return true;
       }
       return false;
@@ -141,6 +167,9 @@ class AuthService {
   Future<void> logout() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove('auth_token');
+    await prefs.remove('username');
+    await prefs.remove('email');
+    await prefs.remove('user_profile');
   }
   
   Future<bool> isLoggedIn() async {

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 class BMICalculator extends StatefulWidget {
+  const BMICalculator({super.key});
+
   @override
   _BMICalculatorViewState createState() => _BMICalculatorViewState();
 }
@@ -171,10 +173,10 @@ class _BMICalculatorViewState extends State<BMICalculator> {
                     Center(
                       child: ElevatedButton(
                         onPressed: calculateBMI,
-                        child: Text('Calculate'),
                         style: ElevatedButton.styleFrom(
                           padding: EdgeInsets.symmetric(horizontal: 32, vertical: 12),
                         ),
+                        child: Text('Calculate'),
                       ),
                     ),
                   ],
