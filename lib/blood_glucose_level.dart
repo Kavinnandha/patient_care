@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'providers/blood_glucose_provider.dart';
 import 'blood_glucose_history_page.dart';
+import 'widgets/blood_glucose_graph.dart';
 
 class BloodGlucoseView extends StatefulWidget {
   const BloodGlucoseView({super.key});
@@ -20,7 +21,8 @@ class BloodGlucoseViewState extends State<BloodGlucoseView> {
     });
   }
 
-  void _showAddReadingDialog(BuildContext context, {BloodGlucoseReading? reading}) {
+  void _showAddReadingDialog(BuildContext context,
+      {BloodGlucoseReading? reading}) {
     double glucoseLevel = reading?.glucoseLevel ?? 100.0;
     String readingType = reading?.readingType ?? 'pre_meal';
     final formKey = GlobalKey<FormState>();
@@ -36,7 +38,8 @@ class BloodGlucoseViewState extends State<BloodGlucoseView> {
             mainAxisSize: MainAxisSize.min,
             children: [
               TextFormField(
-                decoration: const InputDecoration(labelText: 'Glucose Value (mg/dL)'),
+                decoration:
+                    const InputDecoration(labelText: 'Glucose Value (mg/dL)'),
                 keyboardType: TextInputType.number,
                 initialValue: glucoseLevel.toString(),
                 validator: (value) {
@@ -56,7 +59,13 @@ class BloodGlucoseViewState extends State<BloodGlucoseView> {
               DropdownButtonFormField<String>(
                 decoration: const InputDecoration(labelText: 'Reading Type'),
                 value: BloodGlucoseReading.convertReadingTypeToUI(readingType),
-                items: ['Before meal', 'After meal', 'Fasting', 'Bedtime', 'Random']
+                items: [
+                  'Before meal',
+                  'After meal',
+                  'Fasting',
+                  'Bedtime',
+                  'Random'
+                ]
                     .map((type) => DropdownMenuItem(
                           value: type,
                           child: Text(type),
@@ -78,7 +87,7 @@ class BloodGlucoseViewState extends State<BloodGlucoseView> {
             onPressed: () {
               if (formKey.currentState!.validate()) {
                 formKey.currentState!.save();
-                
+
                 if (isEditing) {
                   // Update existing reading
                   final updatedReading = BloodGlucoseReading(
@@ -95,7 +104,10 @@ class BloodGlucoseViewState extends State<BloodGlucoseView> {
                   // Create new reading
                   final newReading = BloodGlucoseReading(
                     id: '', // ID will be assigned by the server
-                    patientId: Provider.of<BloodGlucoseProvider>(context, listen: false).currentUserId ?? '',
+                    patientId: Provider.of<BloodGlucoseProvider>(context,
+                                listen: false)
+                            .currentUserId ??
+                        '',
                     glucoseLevel: glucoseLevel,
                     timestamp: DateTime.now(),
                     readingType: readingType,
@@ -103,7 +115,7 @@ class BloodGlucoseViewState extends State<BloodGlucoseView> {
                   Provider.of<BloodGlucoseProvider>(context, listen: false)
                       .addReading(newReading);
                 }
-                
+
                 Navigator.of(ctx).pop();
               }
             },
@@ -126,7 +138,7 @@ class BloodGlucoseViewState extends State<BloodGlucoseView> {
   String _formatTimestamp(DateTime timestamp) {
     final now = DateTime.now();
     final difference = now.difference(timestamp);
-    
+
     if (difference.inDays == 0) {
       if (difference.inHours == 0) {
         return 'Just now';
@@ -154,7 +166,7 @@ class BloodGlucoseViewState extends State<BloodGlucoseView> {
             if (provider.isLoading) {
               return const Center(child: CircularProgressIndicator());
             }
-            
+
             if (provider.error != null) {
               return Center(
                 child: Column(
@@ -170,21 +182,20 @@ class BloodGlucoseViewState extends State<BloodGlucoseView> {
                 ),
               );
             }
-            
+
             // Use ListView as the main scrollable container to fix overflow
             return ListView(
               padding: const EdgeInsets.all(16),
               children: [
-                // Graph Placeholder
+                // Blood Glucose Graph
                 Container(
-                  height: 200,
-                  width: double.infinity,
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(color: Colors.grey.shade300),
                   ),
                   margin: const EdgeInsets.only(bottom: 16),
+                  height: 200,
                   child: provider.readings.isEmpty
                       ? Center(
                           child: Text(
@@ -192,28 +203,28 @@ class BloodGlucoseViewState extends State<BloodGlucoseView> {
                             style: TextStyle(color: Colors.grey.shade700),
                           ),
                         )
-                      : Center(
-                          child: Text(
-                            "Blood Glucose Graph",
-                            style: TextStyle(color: Colors.grey.shade700),
-                          ),
+                      : BloodGlucoseGraph(
+                          readings: provider.readings.take(10).toList(),
+                          height: 200,
+                          showFullDate: false,
                         ),
                 ),
-                
+
                 // Log Entry Button
                 ElevatedButton.icon(
                   icon: const Icon(Icons.add),
                   label: const Text("Log Blood Glucose"),
                   style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 12, horizontal: 16),
                     backgroundColor: Colors.blue,
                     foregroundColor: Colors.white,
                   ),
                   onPressed: () => _showAddReadingDialog(context),
                 ),
-                
+
                 const SizedBox(height: 24),
-                
+
                 const Text(
                   "Recent Readings",
                   style: TextStyle(
@@ -221,9 +232,9 @@ class BloodGlucoseViewState extends State<BloodGlucoseView> {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                
+
                 const SizedBox(height: 12),
-                
+
                 // Recent Readings List - Use Column instead of nested ListView
                 if (provider.readings.isEmpty)
                   Center(
@@ -237,47 +248,51 @@ class BloodGlucoseViewState extends State<BloodGlucoseView> {
                     ),
                   )
                 else
-                  ...provider.readings.take(5).map((reading) => Card(
-                    margin: const EdgeInsets.only(bottom: 8),
-                    child: ListTile(
-                      title: Text("${reading.glucoseLevel} mg/dL"),
-                      subtitle: Text(
-                        "${_formatTimestamp(reading.timestamp)} • ${BloodGlucoseReading.convertReadingTypeToUI(reading.readingType)}"
-                      ),
-                      trailing: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(
-                            Icons.circle,
-                            color: _getColorForReading(reading.glucoseLevel),
-                            size: 12,
-                          ),
-                          const SizedBox(width: 8),
-                          PopupMenuButton<String>(
-                            icon: const Icon(Icons.more_vert),
-                            onSelected: (value) {
-                              if (value == 'edit') {
-                                _showAddReadingDialog(context, reading: reading);
-                              } else if (value == 'delete') {
-                                provider.deleteReading(reading.id);
-                              }
-                            },
-                            itemBuilder: (context) => [
-                              const PopupMenuItem(
-                                value: 'edit',
-                                child: Text('Edit'),
+                  ...provider.readings
+                      .take(5)
+                      .map((reading) => Card(
+                            margin: const EdgeInsets.only(bottom: 8),
+                            child: ListTile(
+                              title: Text("${reading.glucoseLevel} mg/dL"),
+                              subtitle: Text(
+                                  "${_formatTimestamp(reading.timestamp)} • ${BloodGlucoseReading.convertReadingTypeToUI(reading.readingType)}"),
+                              trailing: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(
+                                    Icons.circle,
+                                    color: _getColorForReading(
+                                        reading.glucoseLevel),
+                                    size: 12,
+                                  ),
+                                  const SizedBox(width: 8),
+                                  PopupMenuButton<String>(
+                                    icon: const Icon(Icons.more_vert),
+                                    onSelected: (value) {
+                                      if (value == 'edit') {
+                                        _showAddReadingDialog(context,
+                                            reading: reading);
+                                      } else if (value == 'delete') {
+                                        provider.deleteReading(reading.id);
+                                      }
+                                    },
+                                    itemBuilder: (context) => [
+                                      const PopupMenuItem(
+                                        value: 'edit',
+                                        child: Text('Edit'),
+                                      ),
+                                      const PopupMenuItem(
+                                        value: 'delete',
+                                        child: Text('Delete'),
+                                      ),
+                                    ],
+                                  ),
+                                ],
                               ),
-                              const PopupMenuItem(
-                                value: 'delete',
-                                child: Text('Delete'),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                  )).toList(),
-                  
+                            ),
+                          ))
+                      .toList(),
+
                 if (provider.readings.length > 5)
                   Padding(
                     padding: const EdgeInsets.only(top: 8.0),
@@ -286,7 +301,8 @@ class BloodGlucoseViewState extends State<BloodGlucoseView> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => const BloodGlucoseHistoryPage(),
+                            builder: (context) =>
+                                const BloodGlucoseHistoryPage(),
                           ),
                         );
                       },
