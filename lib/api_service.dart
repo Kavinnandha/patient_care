@@ -25,16 +25,34 @@ class ApiService {
     return _userId!;
   }
 
-  Future<List<dynamic>> getWaterIntakeRecords(String userId) async {
-    final response = await get('${ApiEndpoints.waterIntake}/$userId');
-    return response['data'] ?? [];
+  Future<Map<String, dynamic>> getWaterIntakeRecords(
+      String userId, String startDate, String endDate) async {
+    final response = await get(
+        '${ApiEndpoints.waterIntake}/$userId?startDate=$startDate&endDate=$endDate');
+    return response as Map<String, dynamic>;
   }
 
-  Future<void> addWaterIntakeRecord(String userId, double amount) async {
+  Future<Map<String, dynamic>> getWaterIntakeStats(
+      String userId, String startDate, String endDate) async {
+    final response = await get(
+        '${ApiEndpoints.waterIntake}/stats/$userId?startDate=$startDate&endDate=$endDate');
+    return response as Map<String, dynamic>;
+  }
+
+  Future<void> addWaterIntakeRecord(
+    String userId,
+    double amount, {
+    String source = 'manual',
+    String? note,
+    double? dailyGoal,
+  }) async {
     await post(ApiEndpoints.waterIntake, {
       'userId': userId,
       'amount': amount,
       'date': DateTime.now().toIso8601String(),
+      'source': source,
+      'note': note,
+      'dailyGoal': dailyGoal,
     });
   }
 
@@ -45,7 +63,7 @@ class ApiService {
   // Get the auth token from shared preferences
   Future<String?> _getToken() async {
     final prefs = await SharedPreferences.getInstance();
-    return prefs.getString('auth_token');
+    return prefs.getString('access_token');
   }
 
   // Generic GET request
@@ -73,6 +91,23 @@ class ApiService {
     }
 
     final response = await http.post(
+      Uri.parse('$baseUrl/$endpoint'),
+      headers: headers,
+      body: jsonEncode(data),
+    );
+
+    return _handleResponse(response);
+  }
+
+  // Generic PATCH request
+  Future<dynamic> patch(String endpoint, Map<String, dynamic> data) async {
+    final token = await _getToken();
+    final headers = Map<String, String>.from(EnvConfig.headers);
+    if (token != null) {
+      headers['Authorization'] = 'Bearer $token';
+    }
+
+    final response = await http.patch(
       Uri.parse('$baseUrl/$endpoint'),
       headers: headers,
       body: jsonEncode(data),
@@ -115,17 +150,104 @@ class ApiService {
   }
 
   // Handle API responses
-  dynamic _handleResponse(http.Response response) {
+  bool _isRefreshing = false;
+
+  Future<dynamic> _handleResponse(http.Response response,
+      {bool isRetry = false}) async {
     try {
-      final data = jsonDecode(response.body);
+      // Check for empty response body
+      if (response.body.isEmpty) {
+        throw ApiException(
+          'Empty response from server',
+          response.statusCode,
+          '',
+        );
+      }
+      dynamic data;
+      try {
+        data = jsonDecode(response.body);
+      } catch (e) {
+        data = response.body; // Return raw string if JSON decoding fails
+      }
 
       if (response.statusCode >= 200 && response.statusCode < 300) {
+        print("Response data: $data"); // Debug log
         return data;
-      } else if (response.statusCode == 401) {
-        throw UnauthorizedException('Authentication required');
+      } else if (response.statusCode == 401 && !isRetry && !_isRefreshing) {
+        _isRefreshing = true;
+        try {
+          // Check if we can refresh the token
+          final prefs = await SharedPreferences.getInstance();
+          final refreshToken = prefs.getString('refresh_token');
+
+          if (refreshToken != null) {
+            // Use direct http call to avoid recursion
+            final refreshResponse = await http.post(
+              Uri.parse('$baseUrl/auth/refresh'),
+              headers: EnvConfig.headers,
+              body: jsonEncode({'refreshToken': refreshToken}),
+            );
+
+            final refreshData = jsonDecode(refreshResponse.body);
+            if (refreshResponse.statusCode == 200 &&
+                refreshData['status'] == 'success') {
+              final tokens = refreshData['data'];
+              await prefs.setString('access_token', tokens['token']);
+              await prefs.setString('refresh_token', tokens['refreshToken']);
+
+              // Retry the original request with new token
+              final headers = Map<String, String>.from(EnvConfig.headers);
+              headers['Authorization'] = 'Bearer ${tokens['token']}';
+
+              // Reconstruct the original request with the new token
+              final originalMethod = response.request!.method;
+              final originalUrl = response.request!.url;
+
+              http.Response retryResponse;
+              if (originalMethod == 'GET') {
+                retryResponse = await http.get(originalUrl, headers: headers);
+              } else if (originalMethod == 'POST') {
+                retryResponse = await http.post(originalUrl,
+                    headers: headers,
+                    body: response.request is http.Request
+                        ? (response.request as http.Request).body
+                        : null);
+              } else if (originalMethod == 'PUT') {
+                retryResponse = await http.put(originalUrl,
+                    headers: headers,
+                    body: response.request is http.Request
+                        ? (response.request as http.Request).body
+                        : null);
+              } else if (originalMethod == 'PATCH') {
+                retryResponse = await http.patch(originalUrl,
+                    headers: headers,
+                    body: response.request is http.Request
+                        ? (response.request as http.Request).body
+                        : null);
+              } else if (originalMethod == 'DELETE') {
+                retryResponse =
+                    await http.delete(originalUrl, headers: headers);
+              } else {
+                throw ApiException('Unsupported HTTP method', 500, '');
+              }
+
+              _isRefreshing = false;
+              return _handleResponse(retryResponse, isRetry: true);
+            }
+          }
+        } catch (e) {
+          print('Token refresh failed: $e');
+        } finally {
+          _isRefreshing = false;
+        }
+
+        throw UnauthorizedException('Session expired. Please log in again.');
       } else {
+        final errorMessage = data['error'] == 'Too many attempts'
+            ? 'Too many login attempts'
+            : data['error'] ?? 'An error occurred';
         throw ApiException(
-          data['error'] ?? 'API Error: ${response.statusCode}',
+          errorMessage,
           response.statusCode,
           response.body,
         );
@@ -168,31 +290,17 @@ class AuthService {
 
   AuthService(this._apiService);
 
-  Future<bool> login(String username, String password) async {
-    try {
-      final response = await _apiService.post('auth/login', {
-        'username': username,
-        'password': password,
-      });
-
-      if (response['token'] != null) {
-        final prefs = await SharedPreferences.getInstance();
-        await prefs.setString('auth_token', response['token']);
-        await prefs.setString('username', response['user']['username']);
-        await prefs.setString('email', response['user']['email']);
-        await prefs.setString('user_profile', jsonEncode(response['profile']));
-        return true;
-      }
-      return false;
-    } catch (e) {
-      print('Login error: $e');
-      return false;
-    }
+  Future<Map<String, dynamic>> login(String username, String password) async {
+    final response = await _apiService.post('auth/login', {
+      'username': username,
+      'password': password,
+    });
+    return response;
   }
 
   Future<void> logout() async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.remove('auth_token');
+    await prefs.remove('access_token');
     await prefs.remove('username');
     await prefs.remove('email');
     await prefs.remove('user_profile');
@@ -200,6 +308,6 @@ class AuthService {
 
   Future<bool> isLoggedIn() async {
     final prefs = await SharedPreferences.getInstance();
-    return prefs.getString('auth_token') != null;
+    return prefs.getString('access_token') != null;
   }
 }

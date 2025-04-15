@@ -1,8 +1,10 @@
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'providers/auth_provider.dart';
 import 'registration_page.dart';
+import 'api_service.dart';
 
 class LoginPage extends StatefulWidget {
     const LoginPage({super.key});
@@ -14,25 +16,63 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   final _usernameController = TextEditingController();
   final _passwordController = TextEditingController();
-  final bool _isLoading = false;
   String? _errorMessage;
 
   Future<void> _handleLogin() async {
+    // Hide keyboard to prevent IME issues
+    FocusScope.of(context).unfocus();
+    
+    if (_usernameController.text.isEmpty || _passwordController.text.isEmpty) {
+      setState(() {
+        _errorMessage = 'Please enter both username and password';
+      });
+      return;
+    }
+
     try {
-      final success = await context.read<AuthProvider>().login(
-        _usernameController.text,
-        _passwordController.text,
+      setState(() {
+        _errorMessage = null;
+      });
+
+      // Trim input to prevent whitespace issues
+      final username = _usernameController.text.trim();
+      final password = _passwordController.text;
+
+      final response = await context.read<AuthProvider>().login(
+        username,
+        password,
       );
 
-      if (!success && mounted) {
+      if (!mounted) return;
+
+      if (!response.success) {
         setState(() {
-          _errorMessage = 'Invalid username or password';
+          _errorMessage = response.error ?? response.message;
+        });
+      } else {
+        // Clear password field after successful login
+        _passwordController.clear();
+        
+        // Let AuthWrapper handle navigation automatically
+        // No explicit navigation needed as AuthWrapper will detect auth state change
+      }
+    } on ApiException catch (e) {
+      if (mounted) {
+        setState(() {
+          _errorMessage = e.message;
+        });
+      }
+    } on UnauthorizedException catch (e) {
+      if (mounted) {
+        setState(() {
+          _errorMessage = e.message;
         });
       }
     } catch (e) {
       if (mounted) {
         setState(() {
-          _errorMessage = e.toString();
+          _errorMessage = 'An unexpected error occurred. Please try again.';
+          print('Login error: $e'); // Add debug logging
         });
       }
     }
@@ -132,7 +172,12 @@ class _LoginPageState extends State<LoginPage> {
                               ),
                             Consumer<AuthProvider>(
                               builder: (context, auth, _) => GestureDetector(
-                                onTap: auth.isLoading ? null : _handleLogin,
+                                onTap: auth.isLoading ? null : () async {
+                                  await _handleLogin();
+                                  if (mounted) {
+                                    _passwordController.clear();
+                                  }
+                                },
                                 child: Container(
                                   padding: const EdgeInsets.all(17),
                                   decoration: BoxDecoration(

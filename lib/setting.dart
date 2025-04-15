@@ -45,11 +45,8 @@ class _SettingsPageState extends State<SettingsPage> {
             title: "Account Settings",
             icon: Icons.person,
             onTap: () {
-              // Implement logout functionality
-              // Assuming you have an AuthProvider to handle authentication
-              final authProvider = Provider.of<AuthProvider>(context, listen: false);
-              authProvider.logout(); // Call the logout method
-              Navigator.of(context).pushReplacementNamed('/login'); // Navigate to login screen
+              // Navigate to account settings
+              // TODO: Implement account settings page
             },
           ),
           _buildListTile(
@@ -65,7 +62,16 @@ class _SettingsPageState extends State<SettingsPage> {
           _buildListTile(
             title: "Logout",
             icon: Icons.exit_to_app,
-            onTap: () {},
+            onTap: () async {
+              final authProvider = Provider.of<AuthProvider>(context, listen: false);
+              await authProvider.logout();
+              if (!mounted) return;
+              Navigator.pushNamedAndRemoveUntil(
+                context,
+                '/login',
+                (route) => false,
+              );
+            },
             color: Colors.red,
           ),
         ],

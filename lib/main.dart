@@ -8,7 +8,7 @@ import 'services/sync_service.dart';
 import 'providers/auth_provider.dart';
 import 'providers/dashboard_provider.dart';
 import 'providers/health_data_provider.dart';
-import 'providers/blood_glucose_provider.dart';
+import 'providers/blood_glucose_provider.dart'; // Import the moved provider
 import 'utils/database_helper.dart';
 import 'dashboard.dart';
 import 'login_page.dart';
@@ -58,13 +58,14 @@ void main() async {
           update: (context, syncService, previous) => 
             previous ?? HealthDataProvider(syncService),
         ),
-        ChangeNotifierProxyProvider2<ApiService, SyncService, BloodGlucoseProvider>(
+        ChangeNotifierProxyProvider3<ApiService, SyncService, AuthProvider, BloodGlucoseProvider>(
           create: (context) => BloodGlucoseProvider(
             context.read<ApiService>(),
             context.read<SyncService>(),
+            context.read<AuthProvider>(),
           ),
-          update: (context, apiService, syncService, previous) => 
-            previous ?? BloodGlucoseProvider(apiService, syncService),
+          update: (context, apiService, syncService, authProvider, previous) => 
+            previous ?? BloodGlucoseProvider(apiService, syncService, authProvider),
         ),
       ],
       child: const MyApp(),
@@ -99,7 +100,12 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.deepPurple,
         scaffoldBackgroundColor: Colors.grey[300],
       ),
-      home: const AuthWrapper(),
+      initialRoute: '/',
+      routes: {
+        '/': (context) => const AuthWrapper(key: ValueKey('auth_wrapper')),
+        '/login': (context) => const LoginPage(),
+        '/dashboard': (context) => const Dashboard(),
+      },
     );
   }
 }
@@ -119,11 +125,18 @@ class AuthWrapper extends StatelessWidget {
           );
         }
 
-        if (authProvider.isAuthenticated) {
-          return const Dashboard();
-        }
-
-        return const LoginPage();
+        return Scaffold(
+          body: AnimatedSwitcher(
+            duration: const Duration(milliseconds: 300),
+            transitionBuilder: (child, animation) => FadeTransition(
+              opacity: animation,
+              child: child,
+            ),
+            child: authProvider.isAuthenticated
+                ? const Dashboard(key: Key('dashboard'))
+                : const LoginPage(key: Key('login')),
+          ),
+        );
       },
     );
   }

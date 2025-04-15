@@ -36,7 +36,6 @@ class SyncService {
     if (kIsWeb) return;
     await DatabaseHelper.instance.insert('glucose_readings', {
       'id': reading['id'],
-      'patient_id': reading['patientId'],
       'glucose_level': reading['glucoseLevel'],
       'reading_type': reading['readingType'],
       'notes': reading['notes'],
@@ -128,6 +127,7 @@ class SyncService {
     for (final reading in unsyncedReadings) {
       try {
         await _apiService.post('glucose-readings', {
+          'patient': reading['patient_id'],
           'glucoseLevel': reading['glucose_level'],
           'readingType': reading['reading_type'],
           'notes': reading['notes'],

@@ -99,10 +99,22 @@ class _RegistrationPageState extends State<RegistrationPage> {
         _errorMessage = null;
       });
 
-      Map<String, String>? emergencyContact;
+      // Validate emergency contact - all fields must be filled if any are filled
       if (_emergencyNameController.text.isNotEmpty ||
           _emergencyRelationController.text.isNotEmpty ||
           _emergencyPhoneController.text.isNotEmpty) {
+        if (_emergencyNameController.text.isEmpty ||
+            _emergencyRelationController.text.isEmpty ||
+            _emergencyPhoneController.text.isEmpty) {
+          setState(() {
+            _errorMessage = 'Please fill all emergency contact fields or leave them all empty';
+          });
+          return;
+        }
+      }
+
+      Map<String, String>? emergencyContact;
+      if (_emergencyNameController.text.isNotEmpty) {
         emergencyContact = {
           'name': _emergencyNameController.text,
           'relationship': _emergencyRelationController.text,
@@ -110,7 +122,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
         };
       }
 
-      final success = await context.read<AuthProvider>().register(
+      final response = await context.read<AuthProvider>().register(
         username: _usernameController.text,
         email: _emailController.text,
         password: _passwordController.text,
@@ -137,14 +149,18 @@ class _RegistrationPageState extends State<RegistrationPage> {
         emergencyContact: emergencyContact,
       );
 
-      if (success && mounted) {
+      if (response.success && mounted) {
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(builder: (context) => const LoginPage()),
         );
+      } else if (mounted) {
+        setState(() {
+          _errorMessage = response.error ?? response.message;
+        });
       }
     } catch (e) {
       setState(() {
-        _errorMessage = e.toString();
+        _errorMessage = 'An error occurred during registration. Please try again.';
       });
     }
   }

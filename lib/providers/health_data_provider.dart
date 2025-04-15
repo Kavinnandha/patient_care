@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import '../services/sync_service.dart';
+import '../api_service.dart';
 
 class HealthDataProvider with ChangeNotifier {
   final SyncService _syncService;
@@ -36,12 +37,16 @@ class HealthDataProvider with ChangeNotifier {
 
   // Glucose Readings
   Future<void> addGlucoseReading(double glucoseLevel, String readingType, {String? notes}) async {
+    final apiService = ApiService();
     try {
       _isLoading = true;
       notifyListeners();
 
+      final userId = await apiService.getUserId();
+
       final reading = {
         'id': DateTime.now().toIso8601String(),
+        'patientId': userId,
         'glucoseLevel': glucoseLevel,
         'readingType': readingType,
         'notes': notes,

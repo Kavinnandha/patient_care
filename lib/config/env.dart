@@ -9,9 +9,9 @@ class EnvConfig {
   static String get apiBaseUrl {
     switch (_environment) {
       case Environment.dev:
-        return 'http://localhost:3000/api';  // Works for Windows and web
+        return 'http://localhost:3000/api';
       case Environment.prod:
-        return 'http://localhost:3000/api';  // Replace with production URL
+        return 'http://localhost:3000/api';
     }
   }
 

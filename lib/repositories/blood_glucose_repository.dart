@@ -7,7 +7,7 @@ class BloodGlucoseRepository {
   BloodGlucoseRepository(this._apiService);
   
   Future<List<BloodGlucoseReading>> getReadings() async {
-    final response = await _apiService.get('blood-glucose');
+    final response = await _apiService.get('glucose-readings');
     
     return (response as List)
         .map((item) => BloodGlucoseReading.fromJson(item))
@@ -16,7 +16,7 @@ class BloodGlucoseRepository {
   
   Future<BloodGlucoseReading> addReading(BloodGlucoseReading reading) async {
     final response = await _apiService.post(
-      'blood-glucose',
+      'glucose-readings',
       reading.toJson(),
     );
     
@@ -25,7 +25,7 @@ class BloodGlucoseRepository {
   
   Future<BloodGlucoseReading> updateReading(BloodGlucoseReading reading) async {
     final response = await _apiService.put(
-      'blood-glucose/${reading.id}',
+      'glucose-readings/${reading.id}',
       reading.toJson(),
     );
     
@@ -33,6 +33,6 @@ class BloodGlucoseRepository {
   }
   
   Future<void> deleteReading(int id) async {
-    await _apiService.delete('blood-glucose/$id');
+    await _apiService.delete('glucose-readings/$id');
   }
 }
