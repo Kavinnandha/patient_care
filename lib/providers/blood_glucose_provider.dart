@@ -101,9 +101,9 @@ class BloodGlucoseRepository {
   Future<List<BloodGlucoseReading>> getReadings() async {
     final response = await _apiService.get(ApiEndpoints.glucoseReadings);
 
-    if (response == null || !(response is List)) return [];
+    if (response == null || response is! List) return [];
 
-    return (response as List<dynamic>)
+    return (response)
         .map((item) =>
             BloodGlucoseReading.fromJson(item as Map<String, dynamic>))
         .toList();

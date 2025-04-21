@@ -63,16 +63,11 @@ class WaterIntakeProvider with ChangeNotifier {
 
   Future<void> fetchStatistics(String userId) async {
     try {
-      final endDate = DateTime.now();
-      final startDate = endDate.subtract(const Duration(days: 7));
-
-      final response = await _apiService.getWaterIntakeStats(
-        userId,
-        startDate.toIso8601String(),
-        endDate.toIso8601String(),
-      );
+      final response = await _apiService.getWaterIntakeStats(userId, '', '');
 
       _statistics = List<Map<String, dynamic>>.from(response['data'] ?? []);
+      _statistics.sort((a, b) =>
+          DateTime.parse(a['_id']).compareTo(DateTime.parse(b['_id'])));
       notifyListeners();
     } catch (e) {
       print('Error fetching statistics: $e');

@@ -39,7 +39,7 @@ class BloodGlucoseGraph extends StatelessWidget {
       height: height,
       child: LineChart(
         LineChartData(
-          gridData: FlGridData(show: true),
+          gridData: const FlGridData(show: true),
           titlesData: FlTitlesData(
             bottomTitles: AxisTitles(
               sideTitles: SideTitles(
@@ -61,15 +61,15 @@ class BloodGlucoseGraph extends StatelessWidget {
                 reservedSize: 40,
               ),
             ),
-            leftTitles: AxisTitles(
+            leftTitles: const AxisTitles(
               sideTitles: SideTitles(
                 showTitles: true,
                 reservedSize: 40,
                 interval: 50,
               ),
             ),
-            topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
-            rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+            topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+            rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
           ),
           borderData: FlBorderData(show: true),
           minX: 0,
@@ -87,7 +87,7 @@ class BloodGlucoseGraph extends StatelessWidget {
               spots: spots,
               isCurved: true,
               color: Colors.blue,
-              dotData: FlDotData(show: true),
+              dotData: const FlDotData(show: true),
               belowBarData: BarAreaData(
                 show: true,
                 color: Colors.blue.withOpacity(0.2),
